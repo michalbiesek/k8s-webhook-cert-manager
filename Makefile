@@ -1,4 +1,4 @@
-DOCKER_IMAGE_NAME ?= newrelic/k8s-webhook-cert-manager
+DOCKER_IMAGE_NAME ?= cribl/k8s-webhook-cert-manager
 DOCKER_IMAGE_TAG ?= latest
 KUBECTL_VERSION ?= v1.13.12
 
