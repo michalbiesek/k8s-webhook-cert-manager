@@ -116,7 +116,7 @@ set -e
 
 # create server cert/key CSR and send it to k8s api
 cat <<EOF | kubectl create --validate=false -f -
-apiVersion: certificates.k8s.io/v1beta1
+apiVersion: certificates.k8s.io/v1
 kind: CertificateSigningRequest
 metadata:
   name: ${csrName}
