@@ -1,7 +1,7 @@
-FROM alpine:3.13
+FROM alpine:3.17.2
 
 # This makes it easy to build tagged images with different `kubectl` versions.
-ARG KUBECTL_VERSION="v1.13.12"
+ARG KUBECTL_VERSION="v1.26.1"
 
 # Set by docker automatically
 ARG TARGETOS

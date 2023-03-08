@@ -3,7 +3,7 @@
 set -e
 
 # Fully qualified name of the CSR object
-csr="certificatesigningrequests.v1beta1.certificates.k8s.io"
+csr="certificatesigningrequests"
 
 usage() {
   cat <<EOF
@@ -80,7 +80,7 @@ fi
 
 
 tmpdir=$(mktemp -d)
-echo "creating certs in tmpdir ${tmpdir} "
+echo "INFO: Creating certs in tmpdir ${tmpdir} "
 
 cat <<EOF >> "${tmpdir}/csr.conf"
 [req]
@@ -99,10 +99,10 @@ DNS.3 = ${fullServiceDomain}
 EOF
 
 openssl genrsa -out "${tmpdir}/server-key.pem" 2048
-openssl req -new -key "${tmpdir}/server-key.pem" -subj "/CN=${fullServiceDomain}" -out "${tmpdir}/server.csr" -config "${tmpdir}/csr.conf"
+openssl req -new -key "${tmpdir}/server-key.pem" -subj "/O=system:nodes/CN=system:node:${fullServiceDomain}" -out "${tmpdir}/server.csr" -config "${tmpdir}/csr.conf"
 
 csrName=${service}.${namespace}
-echo "creating csr: ${csrName} "
+echo "INFO: Creating csr: ${csrName} "
 set +e
 
 # clean-up any previously created CSR for our service. Ignore errors if not present.
@@ -116,7 +116,7 @@ set -e
 
 # create server cert/key CSR and send it to k8s api
 cat <<EOF | kubectl create --validate=false -f -
-apiVersion: certificates.k8s.io/v1beta1
+apiVersion: certificates.k8s.io/v1
 kind: CertificateSigningRequest
 metadata:
   name: ${csrName}
@@ -124,6 +124,7 @@ spec:
   groups:
   - system:authenticated
   request: $(base64 < "${tmpdir}/server.csr" | tr -d '\n')
+  signerName: kubernetes.io/kubelet-serving
   usages:
   - digital signature
   - key encipherment
